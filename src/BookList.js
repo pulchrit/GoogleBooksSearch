@@ -5,7 +5,6 @@ import BookItem from "./BookItem";
 class BookList extends React.Component {
 
     render() {
-        console.log(this.props.results);
         const books = this.props.results.items.map( (book) => {
             
             const thumbnail = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : false;

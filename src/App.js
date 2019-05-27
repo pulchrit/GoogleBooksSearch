@@ -9,9 +9,9 @@ class App extends React.Component {
     super(props);
     this.state = {
       results: {},
-      searchTermEntered: "none",
-      printTypeSelected: "none",
-      bookTypeSelected: "none"
+      searchTermEntered: "",
+      printTypeSelected: "",
+      bookTypeSelected: ""
     };
   }
 
@@ -37,14 +37,17 @@ class App extends React.Component {
   // doesn't select a filter option, we aren't going to include any filters in our API url.
   buildParams(params) {
     const queryParams = Object.keys(params).map(key => {
-        //params[key] !== "none" ? `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`; 
-      //return params[key] !== "none" &&  `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
-      //return params[key] && `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
-       if (params[key] !== "none") {
+      // Code below produces a React warning about not return from the arrow function, even if I 
+      // switch the logic (because then I'd have an empty return statement). I tried several
+      // other solutions (see below) all of which returned a value (null or false) that just confused 
+      // the API call. So, I'm leaving this code as-is even though it produces a warning. 
+      if (params[key] !== "") {
         return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
-      }   
+      }  
+      //params[key] !== "none" ? `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`; 
+      //return params[key] !== "none" &&  `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
+      //return params[key] && `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;  
     });
-    console.log(queryParams.join("&"));
     return queryParams.join("&");
   }
 
@@ -57,7 +60,6 @@ class App extends React.Component {
       printType: this.state.printTypeSelected,
       filter: this.state.bookTypeSelected
     };
-    console.log("This is the callURL: ", `${baseURL}${this.buildParams(params)}`);
     return `${baseURL}${this.buildParams(params)}`;
   }
 
@@ -65,7 +67,6 @@ class App extends React.Component {
     if (!response.ok) {
       throw new Error("Something went wrong:");
     }
-    //console.log("this is the response:", response.text());
     return response.json();
   } 
 
@@ -76,19 +77,19 @@ class App extends React.Component {
     return responseJSON;
   }
 
-  //componentDidMount() {
   handleSubmit(e) {
 
     e.preventDefault();
     fetch(this.buildURL())
     .then(this.handleErrors)
     .then(this.handle404Errors)
-    //.then(response => console.log(response))
     .then(data => {
-      console.log("this is the data:", data);
       this.setState({
         results: data,
-        error: null
+        error: null,
+        searchTermEntered: "",
+        printTypeSelected: "",
+        bookTypeSelected: ""
       });
     })
     .catch(error => {
@@ -106,6 +107,12 @@ class App extends React.Component {
           return false;
     }
     return true;
+  }
+
+  isEmpty(results) {
+   Object.keys(results).forEach(key => {
+      results.hasOwnProperty(key) ? return false : return true
+   });
   }
  
   render() {

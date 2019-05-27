@@ -42,7 +42,6 @@ class BookItem extends React.Component {
                     </button>
                     {this.state.showDetails && 
                         <BookDetail 
-                            //setShowDetails={show => this.setShowDetails(show)}
                             genre={this.props.genre}
                             publishedDate={this.props.publishedDate}
                             pageCount={this.props.pageCount}
