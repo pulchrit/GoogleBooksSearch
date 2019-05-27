@@ -14,7 +14,7 @@ class SearchBar extends React.Component {
                             id="search-term" 
                             name="search-term" 
                             className="search-term" 
-                            placeholder="enter search term"
+                            placeholder="Please enter search term"
                             value={this.props.searchTerm}
                             onChange={e => this.props.handleUpdateSearchTermEntered(e.target.value)}
                         >

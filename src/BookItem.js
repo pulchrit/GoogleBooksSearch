@@ -4,7 +4,6 @@ import BookDetail from "./BookDetail";
 
 class BookItem extends React.Component {
 
-    showMoreButton()
     
     setShowDetails(show, moreOrLess) {
         this.setState({
@@ -31,13 +30,13 @@ class BookItem extends React.Component {
                 }
                 <div className="book-info">
                     <h2 className="book-title">{this.props.title}</h2>
-                    <p className="book-authors">{`Author(s): ${this.props.authors.join(", ")}`}</p>
+                    <p className="book-authors">{`Author(s): ${this.props.authors}`}</p>
                     <p className="price">{`Price: ${this.props.price}`}</p>
                     <p className="book-snippet">{this.props.textSnippet}</p>
                     <button 
                         className="details-button" 
                         type="button"
-                        onClick={e => this.state.setShowDetails(!this.state.showDetails, !this.state.showMore)}
+                        onClick={e => this.setShowDetails(!this.state.showDetails, !this.state.showMore)}
                     >
                         {showMoreValue ? 'more' : 'less'}
                     </button>

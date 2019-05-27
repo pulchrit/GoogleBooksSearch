@@ -9,7 +9,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       results: {},
-      searchTermEntered: "Please enter a search word",
+      searchTermEntered: "none",
       printTypeSelected: "none",
       bookTypeSelected: "none"
     };
@@ -33,13 +33,18 @@ class App extends React.Component {
     });
   }
 
-
+  // Only build params if a value was entered or selected in the form. So, if user 
+  // doesn't select a filter option, we aren't going to include any filters in our API url.
   buildParams(params) {
     const queryParams = Object.keys(params).map(key => {
-      if (params[key] !== "none") {
-        return `${encodeURIComponent(key)}=${encodeURLComponent(params[key])}`
-      } 
+        //params[key] !== "none" ? `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`; 
+      //return params[key] !== "none" &&  `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
+      //return params[key] && `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
+       if (params[key] !== "none") {
+        return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+      }   
     });
+    console.log(queryParams.join("&"));
     return queryParams.join("&");
   }
 
@@ -52,24 +57,35 @@ class App extends React.Component {
       printType: this.state.printTypeSelected,
       filter: this.state.bookTypeSelected
     };
-
-    return `${baseURL}${buildParams(params)}`;
+    console.log("This is the callURL: ", `${baseURL}${this.buildParams(params)}`);
+    return `${baseURL}${this.buildParams(params)}`;
   }
 
   handleErrors(response) {
     if (!response.ok) {
       throw new Error("Something went wrong:");
     }
+    //console.log("this is the response:", response.text());
     return response.json();
+  } 
+
+  handle404Errors(responseJSON) {
+    if (responseJSON.totalItems === 0) {
+      throw new Error("No items were found.")
+    }
+    return responseJSON;
   }
 
   //componentDidMount() {
   handleSubmit(e) {
 
     e.preventDefault();
-    fetch(buildURL)
-    .then(handleErrors)
+    fetch(this.buildURL())
+    .then(this.handleErrors)
+    .then(this.handle404Errors)
+    //.then(response => console.log(response))
     .then(data => {
+      console.log("this is the data:", data);
       this.setState({
         results: data,
         error: null
@@ -82,13 +98,23 @@ class App extends React.Component {
     });
 
   }
-  
+
+  // Attribution: https://coderwall.com/p/_g3x9q/how-to-check-if-javascript-object-is-empty
+  isEmpty(results) {
+    for(var key in results) {
+      if(results.hasOwnProperty(key))
+          return false;
+    }
+    return true;
+  }
+ 
   render() {
 
     // Display placeholder content until search term is entered and results returned. 
-    const mainContent = this.state.results 
-                        ? <BookList results={this.state.results}/>
-                        : <div className="placeholder-text">Enter a search term above</div>;
+    const mainContent = this.isEmpty(this.state.results)
+                        ? <div className="placeholder-text">Enter a search term above</div>
+                        : <BookList results={this.state.results}/>;
+                         
 
     // If there is an error, display it, otherwise display an empty string.
     const error = this.state.error
