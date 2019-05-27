@@ -108,12 +108,6 @@ class App extends React.Component {
     }
     return true;
   }
-
-  isEmpty(results) {
-   Object.keys(results).forEach(key => {
-      results.hasOwnProperty(key) ? return false : return true
-   });
-  }
  
   render() {
 
